@@ -20,6 +20,10 @@ type RootDoc struct {
 
 	rID        int // rId is used to generate unique relationship IDs.
 	ImageCount uint
+
+	// Headers and footers storage
+	Headers []*Header // Headers stores all headers for automatic serialization
+	Footers []*Footer // Footers stores all footers for automatic serialization
 }
 
 // NewRootDoc creates a new instance of the RootDoc structure.

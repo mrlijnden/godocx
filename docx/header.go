@@ -46,6 +46,11 @@ func (h *Header) AddEmptyParagraph() *Paragraph {
 	return p
 }
 
+// Update saves the current header content to the document's FileMap
+func (h *Header) Update() error {
+	return h.Root.SaveHeader(h)
+}
+
 // MarshalXML implements the xml.Marshaler interface for the Header type
 func (h Header) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	start.Name.Local = "w:hdr"
@@ -98,6 +103,9 @@ func (rd *RootDoc) AddHeader(hdrType stypes.HdrFtrType) *Header {
 		Type: hdrType,
 		ID:   rID,
 	}
+
+	// Store header for automatic serialization
+	rd.Headers = append(rd.Headers, header)
 
 	return header
 }

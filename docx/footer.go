@@ -46,6 +46,11 @@ func (f *Footer) AddEmptyParagraph() *Paragraph {
 	return p
 }
 
+// Update saves the current footer content to the document's FileMap
+func (f *Footer) Update() error {
+	return f.Root.SaveFooter(f)
+}
+
 // MarshalXML implements the xml.Marshaler interface for the Footer type
 func (f Footer) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	start.Name.Local = "w:ftr"
@@ -98,6 +103,9 @@ func (rd *RootDoc) AddFooter(ftrType stypes.HdrFtrType) *Footer {
 		Type: ftrType,
 		ID:   rID,
 	}
+
+	// Store footer for automatic serialization
+	rd.Footers = append(rd.Footers, footer)
 
 	return footer
 }

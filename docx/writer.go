@@ -81,6 +81,11 @@ func (rd *RootDoc) writeToZip(zw *zip.Writer) error {
 	}
 	rd.FileMap.Store(rd.DocStyles.RelativePath, docStyleBytes)
 
+	// Serialize headers and footers
+	if err := rd.serializeHeadersAndFooters(); err != nil {
+		return err
+	}
+
 	rd.FileMap.Range(func(path, content any) bool {
 		files = append(files, path.(string))
 		return true
@@ -97,6 +102,29 @@ func (rd *RootDoc) writeToZip(zw *zip.Writer) error {
 	}
 
 	return err
+}
+
+// serializeHeadersAndFooters serializes all headers and footers to the FileMap
+func (rd *RootDoc) serializeHeadersAndFooters() error {
+	// Serialize all headers
+	for _, header := range rd.Headers {
+		xmlData, err := marshal(header)
+		if err != nil {
+			return err
+		}
+		rd.FileMap.Store(header.filename, xmlData)
+	}
+
+	// Serialize all footers
+	for _, footer := range rd.Footers {
+		xmlData, err := marshal(footer)
+		if err != nil {
+			return err
+		}
+		rd.FileMap.Store(footer.filename, xmlData)
+	}
+
+	return nil
 }
 
 // Save method saves the RootDoc to the specified file path.

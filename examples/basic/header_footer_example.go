@@ -19,27 +19,19 @@ func main() {
 	doc.AddParagraph("This is the main document content.")
 	doc.AddParagraph("Headers and footers will appear on every page.")
 
-	// Add a default header
+	// Add a default header (no manual save needed!)
 	header := doc.AddHeader(stypes.HdrFtrDefault)
 	header.AddParagraph("This is the default header - appears on all pages")
 
-	// Add a default footer
+	// Add a default footer (no manual save needed!)
 	footer := doc.AddFooter(stypes.HdrFtrDefault)
 	footer.AddParagraph("This is the default footer - appears on all pages")
 
-	// Save the header and footer to the document
-	if err := doc.SaveHeader(header); err != nil {
-		log.Fatalf("Failed to save header: %v", err)
-	}
-
-	if err := doc.SaveFooter(footer); err != nil {
-		log.Fatalf("Failed to save footer: %v", err)
-	}
-
-	// Save the document
+	// Save the document (headers and footers are automatically included)
 	if err := doc.SaveTo("header_footer_example.docx"); err != nil {
 		log.Fatalf("Failed to save document: %v", err)
 	}
 
 	fmt.Println("Document with header and footer saved successfully!")
+	fmt.Println("Note: Headers and footers are automatically saved with the document!")
 }
