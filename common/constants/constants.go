@@ -72,6 +72,8 @@ const (
 	SourceRelationshipImage            = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"
 	SourceRelationshipOfficeDocument   = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"
 	SourceRelationshipHyperLink        = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"
+	SourceRelationshipHeader           = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/header"
+	SourceRelationshipFooter           = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer"
 )
 
 const (
