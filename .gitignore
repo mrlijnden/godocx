@@ -28,3 +28,6 @@ examples/advanced/advanced_header_footer_example
 
 # Go workspace file
 go.work
+
+# Ideation
+ideas.md
