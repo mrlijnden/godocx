@@ -24,15 +24,34 @@ This fork includes several improvements over the original library:
 ### Header/Footer Usage Example
 
 ```go
-// Create headers and footers with the improved API
-header := doc.AddHeader(stypes.HdrFtrDefault)
-header.AddParagraph("This is a header - no manual save needed!")
+package main
 
-footer := doc.AddFooter(stypes.HdrFtrDefault)
-footer.AddParagraph("This is a footer - no manual save needed!")
+import (
+    "log"
+    "github.com/mrlijnden/godocx"
+    "github.com/mrlijnden/godocx/wml/stypes"
+)
 
-// Everything is automatically saved when you call SaveTo()
-doc.SaveTo("document.docx")
+func main() {
+    // Create a new document
+    doc, err := godocx.NewDocument()
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    // Add some content
+    doc.AddParagraph("This is the main document content.")
+
+    // Create headers and footers with the improved API
+    header := doc.AddHeader(stypes.HdrFtrDefault)
+    header.AddParagraph("This is a header - no manual save needed!")
+
+    footer := doc.AddFooter(stypes.HdrFtrDefault)
+    footer.AddParagraph("This is a footer - no manual save needed!")
+
+    // Everything is automatically saved when you call SaveTo()
+    doc.SaveTo("document.docx")
+}
 ```
 
 ## Usage
