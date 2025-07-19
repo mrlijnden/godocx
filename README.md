@@ -1,7 +1,7 @@
 # Godocx
 
-[![Go CI](https://github.com/gomutex/godocx/actions/workflows/go.yml/badge.svg)](https://github.com/gomutex/godocx/actions/workflows/go.yml) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/gomutex/godocx) [![Go Reference](https://pkg.go.dev/badge/github.com/gomutex/godocx.svg)](https://pkg.go.dev/github.com/gomutex/godocx)
- [![Go Report Card](https://goreportcard.com/badge/github.com/gomutex/godocx)](https://goreportcard.com/report/github.com/gomutex/godocx) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Go CI](https://github.com/gomutex/godocx/actions/workflows/go.yml/badge.svg)](https://github.com/gomutex/godocx/actions/workflows/go.yml) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/gomutex/godocx) [![Go Reference](https://pkg.go.dev/badge/github.com/mrlijnden/godocx.svg)](https://pkg.go.dev/github.com/mrlijnden/godocx)
+ [![Go Report Card](https://goreportcard.com/badge/github.com/mrlijnden/godocx)](https://goreportcard.com/report/github.com/mrlijnden/godocx) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 
 <p align="center"><img width="650" src="./godocx.png" alt="Godocx logo"></p>
@@ -11,8 +11,29 @@ Godocx is a library written in pure Go providing a set of functions that allow y
 
 This library needs Go version 1.18 or later. The usage documentation for the godocx can be accessed via the [Godocx Documentation Page](https://gomutex.github.io/godocx). 
 
-In depth, go docs can be seen using go's built-in documentation tool, or online at [go.dev](https://pkg.go.dev/github.com/gomutex/godocx). Please refer the [subpackage docx](https://pkg.go.dev/github.com/gomutex/godocx/docx) for the list of functions that can be used.
+In depth, go docs can be seen using go's built-in documentation tool, or online at [go.dev](https://pkg.go.dev/github.com/mrlijnden/godocx). Please refer the [subpackage docx](https://pkg.go.dev/github.com/mrlijnden/godocx/docx) for the list of functions that can be used.
 
+## 🆕 What's New in This Fork
+
+This fork includes several improvements over the original library:
+
+- **✨ Improved Header/Footer API**: Headers and footers now follow the library's fluent API pattern - no manual saving required!
+- **🚀 Better Developer Experience**: Consistent with the rest of the library's design philosophy
+- **🔧 Enhanced Examples**: Updated examples showing the improved API
+
+### Header/Footer Usage Example
+
+```go
+// Create headers and footers with the improved API
+header := doc.AddHeader(stypes.HdrFtrDefault)
+header.AddParagraph("This is a header - no manual save needed!")
+
+footer := doc.AddFooter(stypes.HdrFtrDefault)
+footer.AddParagraph("This is a footer - no manual save needed!")
+
+// Everything is automatically saved when you call SaveTo()
+doc.SaveTo("document.docx")
+```
 
 ## Usage
 Here's a simple example of how you can use Godocx to create and modify DOCX documents:
@@ -20,13 +41,17 @@ Here's a simple example of how you can use Godocx to create and modify DOCX docu
 ## Installation
 Use the godocx in your project
 ```bash
-go get github.com/gomutex/godocx
+go get github.com/mrlijnden/godocx
 ```
 
 
 ### Examples
 Explore additional examples and use cases over at GitHub repository dedicated to showcasing the capabilities of Golang Docx:
 https://github.com/gomutex/godocx-examples
+
+Basic header/footer examples are included in this repository:
+- [Basic Header/Footer Example](./examples/basic/header_footer_example.go)
+- [Advanced Header/Footer Example](./examples/advanced/advanced_header_footer_example.go)
 
 
 ```go
@@ -38,7 +63,7 @@ package main
 import (
 	"log"
 
-	"github.com/gomutex/godocx"
+	"github.com/mrlijnden/godocx"
 )
 
 func main() {
@@ -95,13 +120,16 @@ This is screenshot of demo document generated from the godocx library.
 ![Screenshot of the demo output](https://github.com/gomutex/godocx-examples/raw/main/demo.png)
 
 
-## Feature addtion request
+## Feature addition request
 
 If you need a feature that's missing in godocx, feel free to raise an issue describing what you want to achieve, along with a sample DOCX. While I can't promise immediate implementation, I'll review your request and work on it if it's valid.
 
 
 ## Inspiration
 The Godocx library is inspired from the python-docx
+
+## Original Repository
+This is a fork of the original [gomutex/godocx](https://github.com/gomutex/godocx) repository with additional improvements.
 
 ## Licenses
 
