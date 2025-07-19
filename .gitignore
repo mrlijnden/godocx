@@ -2,3 +2,29 @@
 /bin/
 .idea/
 .vscode/
+
+# Generated DOCX files (but keep templates and testdata)
+*.docx
+*.doc
+!templates/*.docx
+!testdata/*.docx
+
+# Generated executables
+examples/basic/header_footer_example
+examples/advanced/advanced_header_footer_example
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
