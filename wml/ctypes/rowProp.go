@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/gomutex/godocx/wml/stypes"
+	"github.com/mrlijnden/godocx/wml/stypes"
 )
 
 // Table Row Properties

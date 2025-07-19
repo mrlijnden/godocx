@@ -4,8 +4,8 @@ import (
 	"encoding/xml"
 	"fmt"
 
-	"github.com/gomutex/godocx/common/constants"
-	"github.com/gomutex/godocx/wml/stypes"
+	"github.com/mrlijnden/godocx/common/constants"
+	"github.com/mrlijnden/godocx/wml/stypes"
 )
 
 var defaultStyleNSAttrs = map[string]string{

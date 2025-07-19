@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/gomutex/godocx"
-	"github.com/gomutex/godocx/wml/stypes"
+	"github.com/mrlijnden/godocx"
+	"github.com/mrlijnden/godocx/wml/stypes"
 )
 
 func main() {

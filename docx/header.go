@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/gomutex/godocx/common/constants"
-	"github.com/gomutex/godocx/wml/ctypes"
-	"github.com/gomutex/godocx/wml/stypes"
+	"github.com/mrlijnden/godocx/common/constants"
+	"github.com/mrlijnden/godocx/wml/ctypes"
+	"github.com/mrlijnden/godocx/wml/stypes"
 )
 
 var headerAttrs = map[string]string{

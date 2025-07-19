@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gomutex/godocx/wml/ctypes"
-	"github.com/gomutex/godocx/wml/stypes"
+	"github.com/mrlijnden/godocx/wml/ctypes"
+	"github.com/mrlijnden/godocx/wml/stypes"
 )
 
 func TestHeader_MarshalXML(t *testing.T) {

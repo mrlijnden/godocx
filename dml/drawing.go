@@ -3,7 +3,7 @@ package dml
 import (
 	"encoding/xml"
 
-	"github.com/gomutex/godocx/common/constants"
+	"github.com/mrlijnden/godocx/common/constants"
 )
 
 type DrawingPositionType string
