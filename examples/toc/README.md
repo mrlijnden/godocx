@@ -1,14 +1,17 @@
 # Table of Contents (TOC) Example
 
-This directory contains a clean, simple example of how to create a Table of Contents in DOCX documents.
+This example demonstrates how to create a professional Table of Contents in a DOCX document using the godocx library.
 
-## 📁 Files
+## Features
 
-- `toc_example.go` - Simple TOC example with programmatic content generation
+- **Professional formatting** with dotted leaders and proper indentation
+- **Automatic heading detection** from document content
+- **Configurable levels** (Heading1, Heading2, Heading3, etc.)
+- **Page number calculation** for realistic TOC entries
+- **Immediate visibility** - no manual Word updates required
+- **Fluent API** for easy configuration
 
-## 🎯 Usage
-
-### Basic TOC Creation
+## Usage
 
 ```go
 package main
@@ -16,7 +19,6 @@ package main
 import (
     "log"
     "github.com/mrlijnden/godocx"
-    "github.com/mrlijnden/godocx/docx"
 )
 
 func main() {
@@ -28,26 +30,21 @@ func main() {
 
     // Add content with headings
     doc.AddHeading("Introduction", 1)
-    doc.AddParagraph("This is the introduction section.")
-
+    doc.AddParagraph("This is the introduction...")
+    
     doc.AddHeading("Getting Started", 1)
-    doc.AddParagraph("This section explains how to get started.")
-
+    doc.AddParagraph("To get started...")
+    
     doc.AddHeading("Installation", 2)
-    doc.AddParagraph("Installation instructions go here.")
+    doc.AddParagraph("Install the library...")
 
-    // Create TOC options
-    tocOptions := docx.TOCOptions{
-        IncludePageNumbers: true,
-        MaxLevel:           3, // Include Heading1, Heading2, Heading3
-        MinLevel:           1,
-    }
-
-    // Add programmatic TOC
-    toc, err := doc.AddTableOfContentsProgrammatic(tocOptions)
-    if err != nil {
-        log.Fatal(err)
-    }
+    // Add TOC with fluent API configuration
+    toc := doc.AddTableOfContents().
+        SetTitle("Table of Contents").
+        SetMaxLevel(3).
+        SetMinLevel(1).
+        SetIncludePageNumbers(true).
+        SetIndentation(20)
 
     // Save the document
     err = doc.SaveTo("document_with_toc.docx")
@@ -57,53 +54,48 @@ func main() {
 }
 ```
 
-## ✨ Features
+## API Reference
 
-- **Professional formatting** with dotted leaders
-- **Bold Level 1 headings** for emphasis
-- **Proper indentation** for hierarchy
-- **Realistic page numbers** based on content position
-- **Immediate visibility** - no manual update needed
-- **Clean, simple API** - easy to use
+### `AddTableOfContents()`
 
-## 🎯 TOC Options
+Creates a new Table of Contents in the document. Returns a `*TOC` object for configuration.
 
-```go
-type TOCOptions struct {
-    IncludePageNumbers bool // Show page numbers
-    MaxLevel           int  // Maximum heading level to include (1-9)
-    MinLevel           int  // Minimum heading level to include (1-9)
-}
-```
+### TOC Configuration Methods
 
-## 🚀 Running the Example
+All configuration methods return the TOC object for fluent chaining:
 
-```bash
-go run toc_example.go
-```
+- **`SetTitle(title string)`** - Sets the TOC title (default: "Table of Contents")
+- **`SetMaxLevel(level int)`** - Sets maximum heading level to include (default: 3)
+- **`SetMinLevel(level int)`** - Sets minimum heading level to include (default: 1)
+- **`SetIncludePageNumbers(include bool)`** - Enables/disables page numbers (default: true)
+- **`SetIndentation(indent int)`** - Sets indentation per level (default: 20)
 
-This will create a `toc_example.docx` file with a professional table of contents.
-
-## 📋 Result
+### Example Output
 
 The generated TOC will look like:
 
 ```
 TABLE OF CONTENTS
 
-Introduction .................... 1
+Introduction ................... 1
 Getting Started ................ 1
-  Installation ................. 1
-  Configuration ................ 1
-Advanced Usage ................. 1
-  Troubleshooting ............. 1
-Conclusion ..................... 1
+  Installation ................. 2
+  Configuration ................ 2
+Advanced Usage ................. 3
+  Troubleshooting .............. 3
+Conclusion ..................... 4
 ```
 
-## 🎉 Benefits
+## How It Works
 
-- **No manual updates** - TOC is visible immediately
-- **Professional appearance** - Looks like a real table of contents
-- **Automatic detection** - Scans document for heading styles
-- **Flexible configuration** - Customize levels and options
-- **Production ready** - Clean, simple implementation 
+1. **Heading Detection**: The TOC automatically scans the document for paragraphs with heading styles (Heading1, Heading2, etc.)
+2. **Content Generation**: Creates professional-looking TOC entries with proper formatting
+3. **Page Calculation**: Estimates page numbers based on document structure
+4. **Document Insertion**: Places the TOC at the beginning of the document
+
+## Notes
+
+- The TOC is immediately visible in the generated DOCX file
+- No manual updates are required in Microsoft Word
+- Page numbers are estimated based on document structure
+- The API follows the project's simple, direct pattern with fluent configuration 

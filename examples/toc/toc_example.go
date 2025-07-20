@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/mrlijnden/godocx"
-	"github.com/mrlijnden/godocx/docx"
 )
 
 func main() {
@@ -39,25 +38,15 @@ func main() {
 	doc.AddHeading("Conclusion", 1)
 	doc.AddParagraph("Summary and next steps.")
 
-	// Create TOC options
-	tocOptions := docx.TOCOptions{
-		IncludePageNumbers: true,
-		MaxLevel:           3, // Include Heading1, Heading2, Heading3
-		MinLevel:           1,
-	}
+	// Add TOC with fluent API configuration
+	toc := doc.AddTableOfContents().
+		SetTitle("Table of Contents").
+		SetMaxLevel(3).
+		SetMinLevel(1).
+		SetIncludePageNumbers(true).
+		SetIndentation(20)
 
-	// Add programmatic TOC
-	toc, err := doc.AddTableOfContentsProgrammatic(tocOptions)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Customize TOC
-	toc.SetTitle("Table of Contents")
-	toc.SetStyle(docx.TOCStyle{
-		TitleStyle:  "TOC Title",
-		Indentation: 20,
-	})
+	log.Printf("TOC created with %d entries", len(toc.Entries))
 
 	// Save the document
 	err = doc.SaveTo("toc_example.docx")

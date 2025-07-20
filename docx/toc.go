@@ -7,228 +7,150 @@ import (
 	"github.com/mrlijnden/godocx/wml/ctypes"
 )
 
-// TOCEntry represents a single entry in the table of contents
-type TOCEntry struct {
-	Text        string
-	Level       int
-	PageNumber  int
-	BookmarkID  string
-	Style       string
-	Indentation int
-}
-
-// TOC represents a complete table of contents
+// TOC represents a Table of Contents in a document
 type TOC struct {
-	Title    string
-	Entries  []TOCEntry
-	Options  TOCOptions
-	Style    TOCStyle
-	Position TOCPosition
-	root     *RootDoc
-}
-
-// TOCOptions defines the configuration for a TOC
-type TOCOptions struct {
-	IncludePageNumbers bool
+	Title              string
+	Entries            []TOCEntry
 	MaxLevel           int
 	MinLevel           int
+	IncludePageNumbers bool
+	Indentation        int
+	root               *RootDoc
 }
 
-// TOCStyle defines the styling for a TOC
-type TOCStyle struct {
-	TitleStyle  string
-	Indentation int
+// TOCEntry represents a single entry in the table of contents
+type TOCEntry struct {
+	Text  string
+	Level int
 }
 
-// TOCPosition defines where the TOC should be placed
-type TOCPosition struct {
-	Location    TOCLocation // Beginning, End, Custom
-	CustomIndex int         // For custom placement
-}
-
-type TOCLocation string
-
-const (
-	TOCLocationBeginning TOCLocation = "beginning"
-	TOCLocationEnd       TOCLocation = "end"
-	TOCLocationCustom    TOCLocation = "custom"
-)
-
-// DefaultTOCOptions returns default TOC options
-func DefaultTOCOptions() TOCOptions {
-	return TOCOptions{
-		IncludePageNumbers: true,
+// AddTableOfContents creates a new Table of Contents in the document
+// This follows the project's simple, direct API pattern
+func (rd *RootDoc) AddTableOfContents() *TOC {
+	toc := &TOC{
+		Title:              "Table of Contents",
 		MaxLevel:           3,
 		MinLevel:           1,
+		IncludePageNumbers: true,
+		Indentation:        20,
+		root:               rd,
 	}
+
+	// Get all headings
+	headings, err := rd.getHeadingStructure()
+	if err == nil {
+		toc.Entries = headings
+	}
+
+	// Create TOC content paragraphs
+	tocParagraphs := rd.createTOCContentParagraphs(toc)
+
+	// Insert at the beginning
+	rd.Document.Body.Children = append(tocParagraphs, rd.Document.Body.Children...)
+
+	return toc
 }
 
-// DefaultTOCStyle returns default TOC styling
-func DefaultTOCStyle() TOCStyle {
-	return TOCStyle{
-		TitleStyle:  "TOC Title",
-		Indentation: 20,
-	}
-}
-
-// SetTitle sets the title for the TOC
+// SetTitle sets the title of the TOC
 func (toc *TOC) SetTitle(title string) *TOC {
 	toc.Title = title
 	return toc
 }
 
-// SetStyle sets the styling for the TOC
-func (toc *TOC) SetStyle(style TOCStyle) *TOC {
-	toc.Style = style
+// SetMaxLevel sets the maximum heading level to include
+func (toc *TOC) SetMaxLevel(level int) *TOC {
+	toc.MaxLevel = level
 	return toc
 }
 
-// SetOptions sets the options for the TOC
-func (toc *TOC) SetOptions(options TOCOptions) *TOC {
-	toc.Options = options
+// SetMinLevel sets the minimum heading level to include
+func (toc *TOC) SetMinLevel(level int) *TOC {
+	toc.MinLevel = level
 	return toc
 }
 
-// GetHeadingStructure scans the document and returns all headings as TOC entries
-func (rd *RootDoc) GetHeadingStructure() ([]TOCEntry, error) {
-	return rd.getHeadingStructure()
+// SetIncludePageNumbers sets whether to include page numbers
+func (toc *TOC) SetIncludePageNumbers(include bool) *TOC {
+	toc.IncludePageNumbers = include
+	return toc
 }
 
-// getHeadingStructure scans the document and returns all headings as TOC entries
+// SetIndentation sets the indentation for the TOC
+func (toc *TOC) SetIndentation(indent int) *TOC {
+	toc.Indentation = indent
+	return toc
+}
+
+// getHeadingStructure retrieves all headings from the document
 func (rd *RootDoc) getHeadingStructure() ([]TOCEntry, error) {
-	var entries []TOCEntry
+	var headings []TOCEntry
 
 	if rd.Document == nil || rd.Document.Body == nil {
-		return entries, nil
+		return headings, nil
 	}
 
 	for _, child := range rd.Document.Body.Children {
 		if child.Para != nil {
-			entry, err := rd.extractHeadingFromParagraph(child.Para)
-			if err != nil {
-				return nil, err
-			}
-			if entry != nil {
-				entries = append(entries, *entry)
+			heading := rd.extractHeadingFromParagraph(child.Para)
+			if heading != nil {
+				headings = append(headings, *heading)
 			}
 		}
 	}
 
-	return entries, nil
+	return headings, nil
 }
 
 // extractHeadingFromParagraph extracts heading information from a paragraph
-func (rd *RootDoc) extractHeadingFromParagraph(para *Paragraph) (*TOCEntry, error) {
-	ct := para.GetCT()
-	if ct == nil || ct.Property == nil || ct.Property.Style == nil {
-		return nil, nil // Not a heading
+func (rd *RootDoc) extractHeadingFromParagraph(para *Paragraph) *TOCEntry {
+	if para.ct.Property == nil || para.ct.Property.Style == nil {
+		return nil
 	}
 
-	style := ct.Property.Style.Val
-	if !strings.HasPrefix(style, "Heading") {
-		return nil, nil // Not a heading style
-	}
-
-	// Extract heading level
-	level := rd.extractHeadingLevel(style)
-	if level == 0 {
-		return nil, nil // Invalid heading level
-	}
-
-	// Extract heading text
+	style := para.ct.Property.Style.Val
 	text := rd.extractTextFromParagraph(para)
-	if text == "" {
-		return nil, nil // Empty heading
+
+	// Check if it's a heading style
+	if strings.HasPrefix(style, "Heading") {
+		level := 1 // Default level
+		if len(style) > 7 {
+			levelStr := style[7:]
+			if levelNum := int(levelStr[0] - '0'); levelNum >= 1 && levelNum <= 9 {
+				level = levelNum
+			}
+		}
+		return &TOCEntry{Text: text, Level: level}
+	} else if style == "Title" {
+		return &TOCEntry{Text: text, Level: 0}
 	}
 
-	entry := &TOCEntry{
-		Text:        text,
-		Level:       level,
-		PageNumber:  0, // Will be calculated later
-		BookmarkID:  rd.generateBookmarkID(text),
-		Style:       style,
-		Indentation: level * 20, // Default indentation
-	}
-
-	return entry, nil
+	return nil
 }
 
-// extractHeadingLevel extracts the heading level from a style name
-func (rd *RootDoc) extractHeadingLevel(style string) int {
-	if !strings.HasPrefix(style, "Heading") {
-		return 0
-	}
-
-	levelStr := strings.TrimPrefix(style, "Heading")
-	if len(levelStr) == 0 {
-		return 1 // Default to level 1
-	}
-
-	// Try to parse the level number
-	var level int
-	_, err := fmt.Sscanf(levelStr, "%d", &level)
-	if err != nil {
-		return 1 // Default to level 1 if parsing fails
-	}
-
-	if level < 1 || level > 9 {
-		return 1 // Default to level 1 if out of range
-	}
-
-	return level
-}
-
-// extractTextFromParagraph extracts text from a paragraph
+// extractTextFromParagraph extracts all text from a paragraph
 func (rd *RootDoc) extractTextFromParagraph(para *Paragraph) string {
-	var textBuilder strings.Builder
+	var text strings.Builder
 
-	ct := para.GetCT()
-	if ct == nil {
-		return ""
-	}
-
-	for _, child := range ct.Children {
+	for _, child := range para.ct.Children {
 		if child.Run != nil {
 			for _, runChild := range child.Run.Children {
 				if runChild.Text != nil {
-					textBuilder.WriteString(runChild.Text.Text)
+					text.WriteString(runChild.Text.Text)
 				}
 			}
 		}
 	}
 
-	return textBuilder.String()
+	return text.String()
 }
 
-// generateBookmarkID generates a bookmark ID for a heading
-func (rd *RootDoc) generateBookmarkID(text string) string {
-	// Simple bookmark ID generation - can be enhanced later
-	// Remove special characters and replace spaces with underscores
-	cleanText := strings.Map(func(r rune) rune {
-		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') {
-			return r
-		}
-		if r == ' ' {
-			return '_'
-		}
-		return -1
-	}, text)
-
-	// Limit length and ensure uniqueness
-	if len(cleanText) > 40 {
-		cleanText = cleanText[:40]
-	}
-
-	return "_TOC_" + cleanText
-}
-
-// createTOCContentParagraphs creates multiple paragraphs for TOC content
-func (rd *RootDoc) createTOCContentParagraphs(headings []TOCEntry, options TOCOptions) []DocumentChild {
+// createTOCContentParagraphs creates the TOC content as paragraphs
+func (rd *RootDoc) createTOCContentParagraphs(toc *TOC) []DocumentChild {
 	var paragraphs []DocumentChild
 
 	// Create TOC title paragraph with professional styling
 	tocPara := newParagraph(rd)
-	tocPara.AddText("TABLE OF CONTENTS").Bold(true).Size(18)
+	tocPara.AddText(toc.Title).Bold(true).Size(18)
 	paragraphs = append(paragraphs, DocumentChild{Para: tocPara})
 
 	// Add a blank line after title
@@ -237,17 +159,17 @@ func (rd *RootDoc) createTOCContentParagraphs(headings []TOCEntry, options TOCOp
 	paragraphs = append(paragraphs, DocumentChild{Para: blankPara})
 
 	// Add TOC entries as separate paragraphs
-	for _, heading := range headings {
+	for _, heading := range toc.Entries {
 		// Skip if outside the level range
-		if heading.Level < options.MinLevel || heading.Level > options.MaxLevel {
+		if heading.Level < toc.MinLevel || heading.Level > toc.MaxLevel {
 			continue
 		}
 
 		// Create TOC entry paragraph with professional formatting
 		entryPara := newParagraph(rd)
 
-		// Add proper indentation based on level (more realistic)
-		indent := (heading.Level - options.MinLevel) * 36 // More realistic indentation
+		// Add proper indentation based on level
+		indent := (heading.Level - toc.MinLevel) * toc.Indentation
 		if indent > 0 {
 			entryPara.Indent(&ctypes.Indent{Left: &indent})
 		}
@@ -259,8 +181,8 @@ func (rd *RootDoc) createTOCContentParagraphs(headings []TOCEntry, options TOCOp
 			entryPara.AddText(heading.Text)
 		}
 
-		// Add professional dotted leader with tab stop
-		if options.IncludePageNumbers {
+		// Add professional dotted leader with page number
+		if toc.IncludePageNumbers {
 			// Add space and dots for traditional TOC formatting
 			entryPara.AddText(" ")
 
@@ -280,17 +202,13 @@ func (rd *RootDoc) createTOCContentParagraphs(headings []TOCEntry, options TOCOp
 	return paragraphs
 }
 
-// calculatePageNumber calculates the page number for a heading (enhanced)
+// calculatePageNumber calculates the page number for a heading
 func (rd *RootDoc) calculatePageNumber(heading TOCEntry) int {
-	// Enhanced page number calculation
-	// This is still simplified but more realistic than the previous version
-
 	if rd.Document == nil || rd.Document.Body == nil {
 		return 1
 	}
 
 	// Count paragraphs to estimate page breaks
-	// In a real document, approximately 20-25 paragraphs per page
 	paragraphsPerPage := 20
 
 	// Find the heading's position in the document
@@ -328,31 +246,7 @@ func (rd *RootDoc) findHeadingIndex(headingText string) int {
 	return -1
 }
 
-// AddTableOfContentsProgrammatic creates a clean, simple TOC with programmatic content
-// This is the recommended method for most use cases
-func (rd *RootDoc) AddTableOfContentsProgrammatic(options TOCOptions) (*TOC, error) {
-	// Create TOC instance
-	toc := &TOC{
-		Title:    "Table of Contents",
-		Entries:  []TOCEntry{},
-		Options:  options,
-		Style:    DefaultTOCStyle(),
-		Position: TOCPosition{Location: TOCLocationBeginning},
-		root:     rd,
-	}
-
-	// Get all headings
-	headings, err := rd.getHeadingStructure()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get heading structure: %w", err)
-	}
-	toc.Entries = headings
-
-	// Create TOC content paragraphs
-	tocParagraphs := rd.createTOCContentParagraphs(headings, options)
-
-	// Insert at the beginning
-	rd.Document.Body.Children = append(tocParagraphs, rd.Document.Body.Children...)
-
-	return toc, nil
+// GetHeadingStructure returns the heading structure for external use
+func (rd *RootDoc) GetHeadingStructure() ([]TOCEntry, error) {
+	return rd.getHeadingStructure()
 }
