@@ -17,6 +17,7 @@ In depth, go docs can be seen using go's built-in documentation tool, or online 
 
 This fork includes several improvements over the original library:
 
+- **📑 Table of Contents (TOC)**: Professional TOC generation with automatic heading detection, dotted leaders, and realistic page numbers
 - **✨ Improved Header/Footer API**: Headers and footers now follow the library's fluent API pattern - no manual saving required!
 - **🚀 Better Developer Experience**: Consistent with the rest of the library's design philosophy
 - **🔧 Enhanced Examples**: Updated examples showing the improved API
@@ -54,6 +55,46 @@ func main() {
 }
 ```
 
+### Table of Contents Usage Example
+
+```go
+package main
+
+import (
+    "log"
+    "github.com/mrlijnden/godocx"
+)
+
+func main() {
+    // Create a new document
+    doc, err := godocx.NewDocument()
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    // Add content with headings
+    doc.AddHeading("Introduction", 1)
+    doc.AddParagraph("This is the introduction...")
+    
+    doc.AddHeading("Getting Started", 1)
+    doc.AddParagraph("To get started...")
+    
+    doc.AddHeading("Installation", 2)
+    doc.AddParagraph("Install the library...")
+
+    // Add TOC with fluent API configuration
+    toc := doc.AddTableOfContents().
+        SetTitle("Table of Contents").
+        SetMaxLevel(3).
+        SetMinLevel(1).
+        SetIncludePageNumbers(true).
+        SetIndentation(20)
+
+    // Save the document
+    doc.SaveTo("document_with_toc.docx")
+}
+```
+
 ## Usage
 Here's a simple example of how you can use Godocx to create and modify DOCX documents:
 
@@ -68,9 +109,10 @@ go get github.com/mrlijnden/godocx
 Explore additional examples and use cases over at GitHub repository dedicated to showcasing the capabilities of Golang Docx:
 https://github.com/gomutex/godocx-examples
 
-Basic header/footer examples are included in this repository:
+Basic examples are included in this repository:
 - [Basic Header/Footer Example](./examples/basic/header_footer_example.go)
 - [Advanced Header/Footer Example](./examples/advanced/advanced_header_footer_example.go)
+- [Table of Contents Example](./examples/toc/toc_example.go)
 
 
 ```go
