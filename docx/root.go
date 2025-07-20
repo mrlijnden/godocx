@@ -28,7 +28,16 @@ type RootDoc struct {
 
 // NewRootDoc creates a new instance of the RootDoc structure.
 func NewRootDoc() *RootDoc {
-	return &RootDoc{}
+	rd := &RootDoc{}
+	rd.Document = &Document{
+		Root: rd,
+		Body: NewBody(rd),
+	}
+	rd.DocStyles = &ctypes.Styles{}
+	rd.ContentType = ContentTypes{}
+	rd.RootRels = Relationships{}
+	rd.Document.DocRels = Relationships{}
+	return rd
 }
 
 // LoadDocXml decodes the provided XML data and returns a Document instance.
