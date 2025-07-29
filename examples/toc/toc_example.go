@@ -39,12 +39,7 @@ func main() {
 	doc.AddParagraph("Summary and next steps.")
 
 	// Add TOC with fluent API configuration
-	toc := doc.AddTableOfContents().
-		SetTitle("Table of Contents").
-		SetMaxLevel(3).
-		SetMinLevel(1).
-		SetIncludePageNumbers(true).
-		SetIndentation(20)
+	toc := doc.AddTableOfContents("Table of Contents", 3, 1, true, 20)
 
 	log.Printf("TOC created with %d entries", len(toc.Entries))
 
