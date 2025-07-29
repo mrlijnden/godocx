@@ -24,15 +24,23 @@ type TOCEntry struct {
 	Level int
 }
 
-// AddTableOfContents creates a new Table of Contents in the document
-// This follows the project's simple, direct API pattern
-func (rd *RootDoc) AddTableOfContents() *TOC {
+/*
+	 	AddTableOfContents creates a new Table of Contents in the document
+	 	This follows the project's simple, direct API pattern
+		Default values:
+		Title: "Table of Contents"
+		MaxLevel: 3
+		MinLevel: 1
+		IncludePageNumbers: true
+		Indentation: 20
+*/
+func (rd *RootDoc) AddTableOfContents(title string, maxLevel int, minLevel int, includePageNumbers bool, indentation int) *TOC {
 	toc := &TOC{
-		Title:              "Table of Contents",
-		MaxLevel:           3,
-		MinLevel:           1,
-		IncludePageNumbers: true,
-		Indentation:        20,
+		Title:              title,
+		MaxLevel:           maxLevel,
+		MinLevel:           minLevel,
+		IncludePageNumbers: includePageNumbers,
+		Indentation:        indentation,
 		root:               rd,
 	}
 
